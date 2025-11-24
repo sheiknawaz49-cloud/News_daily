@@ -30,11 +30,20 @@ jobs:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       run: |
         python main.py
+        echo "Script execution completed"
+        ls -la
 
     - name: Prepare Email Body
       run: |
-        # Rename the generated file to a fixed name for the mail action
-        mv daily_news_script_*.md email_body.md
+        # Check if file exists and rename it
+        if ls daily_news_script_*.md 1> /dev/null 2>&1; then
+          mv daily_news_script_*.md email_body.md
+          echo "File renamed successfully"
+        else
+          echo "Error: No news script file found!"
+          echo "Creating fallback email..."
+          echo "# Error\n\nThe news script generation failed. Please check the workflow logs." > email_body.md
+        fi
 
     - name: Send Email
       uses: dawidd6/action-send-mail@v3
