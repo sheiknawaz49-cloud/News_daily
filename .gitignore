@@ -1,0 +1,13 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.pytest_cache/
+
+# Artifacts
+daily_news_script_*.md
+result.txt
+test_output.txt

@@ -1,1 +1,1 @@
-# News_daily
+News daily
