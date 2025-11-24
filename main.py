@@ -15,10 +15,10 @@ def main():
         print("Error: Missing API keys. Please check your .env file or environment variables.")
         return
 
-    # 1. Fetch News
-    print("Fetching news...")
+    # 1. Fetch News (using US technology news since India returns 0 results)
+    print("Fetching technology news...")
     news_client = NewsClient(news_api_key)
-    articles = news_client.get_top_headlines(country="in") # Defaulting to India as requested (IST context)
+    articles = news_client.get_top_headlines(country="us", category="technology") 
     
     if not articles:
         print("No news articles found.")

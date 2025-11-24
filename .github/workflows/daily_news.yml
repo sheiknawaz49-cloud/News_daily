@@ -2,7 +2,7 @@ name: Daily News Generator
 
 on:
   schedule:
-    # 5:00 PM IST = 11:30 AM UTC
+    # 5:00 PM IST = 11:30 AM UTC (fetches US technology news)
     - cron: '30 11 * * *'
   workflow_dispatch:
 
