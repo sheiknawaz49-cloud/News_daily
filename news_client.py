@@ -43,7 +43,7 @@ class NewsClient:
             else:
                 print(f"Error from API: {json_data.get('message')}")
                 return []
-                
+
         except Exception as e:
             print(f"Error fetching news: {e}")
             return []

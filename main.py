@@ -28,7 +28,7 @@ def main():
 
     # 2. Generate Content
     generator = ContentGenerator(gemini_api_key)
-    content = generator.generate_youtube_script(articles)
+    content = generator.generate_news_summary(articles)
 
     # 3. Save Output
     date_str = datetime.now().strftime("%Y-%m-%d")

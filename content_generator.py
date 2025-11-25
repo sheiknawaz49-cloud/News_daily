@@ -6,43 +6,46 @@ class ContentGenerator:
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel('gemini-2.0-flash')
 
-    def generate_youtube_script(self, articles):
+    def generate_news_summary(self, articles):
         """
-        Generates a YouTube script, title, description, and hashtags based on news articles.
+        Generates a structured summary of top 5 news items (Title, Description, Hashtags).
+        Prioritizes Technology and AI.
         """
         if not articles:
-            return "No articles provided to generate script."
+            return "No articles provided to generate summary."
 
         # Prepare the context from articles
-        news_summary = ""
-        for i, article in enumerate(articles[:5]): # Limit to top 5 stories to keep it concise
+        news_context = ""
+        for i, article in enumerate(articles): 
             title = article.get('title', 'No Title')
             description = article.get('description', 'No Description')
-            news_summary += f"{i+1}. {title}: {description}\n"
+            news_context += f"Article {i+1}: {title} - {description}\n"
 
         prompt = f"""
-        You are a professional YouTube content creator. 
-        Create a script for a daily news update video based on the following top headlines:
+        You are a tech news curator. 
+        From the following list of articles, select the top 5 most relevant and interesting stories, strictly prioritizing Artificial Intelligence (AI) and Technology.
 
-        {news_summary}
+        Input Articles:
+        {news_context}
 
-        Please provide the output in the following format:
+        Output Format:
+        Please provide exactly 5 news items in the following format:
+
+        News 1:
 
         # TITLE
-        [Catchy YouTube Video Title]
+        [Concise and Catchy Title]
 
         # DESCRIPTION
-        [Video Description including a brief summary of the news covered]
+        [2-3 sentences summarizing the key points]
 
         # HASHTAGS
-        [5-10 relevant hashtags]
+        [3-5 relevant hashtags]
 
-        # SCRIPT
-        [Intro]
+        News 2:
         ...
-        [Body - covering each news item with smooth transitions]
-        ...
-        [Outro]
+        
+        News 5:
         ...
         """
 
@@ -65,7 +68,7 @@ if __name__ == "__main__":
             {"title": "Global Stock Markets Rally", "description": "Markets hit record highs as inflation data comes in lower than expected."}
         ]
         generator = ContentGenerator(api_key)
-        script = generator.generate_youtube_script(mock_articles)
+        script = generator.generate_news_summary(mock_articles)
         print(script)
     else:
         print("GEMINI_API_KEY not found in environment.")
