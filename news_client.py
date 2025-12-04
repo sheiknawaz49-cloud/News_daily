@@ -48,6 +48,47 @@ class NewsClient:
             print(f"Error fetching news: {e}")
             return []
 
+    def get_ai_news(self, limit=5):
+        """
+        Fetches the latest 5 AI-related stories from Hacker News using Algolia API.
+        """
+        try:
+            conn = http.client.HTTPSConnection("hn.algolia.com")
+            # Search for "AI" in the last 24 hours (approx), sorted by date
+            # Using a simple query "AI" and tags="story"
+            params = urllib.parse.urlencode({
+                "query": "AI",
+                "tags": "story",
+                "hitsPerPage": limit
+            })
+            url = f"/api/v1/search_by_date?{params}"
+            
+            conn.request("GET", url)
+            response = conn.getresponse()
+            data = response.read()
+            conn.close()
+            
+            if response.status != 200:
+                print(f"Error fetching AI news: HTTP {response.status}")
+                return []
+
+            json_data = json.loads(data)
+            hits = json_data.get("hits", [])
+            
+            ai_articles = []
+            for hit in hits:
+                ai_articles.append({
+                    "title": hit.get("title"),
+                    "description": hit.get("url", "No URL provided"), # HN stories often just have a URL
+                    "source": "Hacker News"
+                })
+            
+            return ai_articles
+
+        except Exception as e:
+            print(f"Error fetching AI news: {e}")
+            return []
+
 if __name__ == "__main__":
     from dotenv import load_dotenv
     load_dotenv()

@@ -55,6 +55,46 @@ class ContentGenerator:
         except Exception as e:
             return f"Error generating content: {e}"
 
+    def generate_ai_summary(self, articles):
+        """
+        Generates a structured summary of top 5 AI news items from Hacker News.
+        """
+        if not articles:
+            return "No AI articles provided."
+
+        # Prepare the context from AI articles
+        ai_news_context = ""
+        for i, article in enumerate(articles):
+            title = article.get('title', 'No Title')
+            url = article.get('description', 'No URL')
+            ai_news_context += f"Article {i+1}: {title} - Link: {url}\n"
+
+        prompt = f"""
+        You are an AI news curator.
+        From the following list of Hacker News AI stories, select the top 5 most interesting ones.
+
+        Input Articles:
+        {ai_news_context}
+
+        Output Format:
+        
+        # 🤖 TOP 5 AI NEWS
+        
+        News 1:
+        ## [Title]
+        [2-3 sentences summarizing the key points or explaining why it's important]
+        **Source/Link:** [Insert the URL provided in the input]
+        **Hashtags:** [3-5 relevant hashtags]
+
+        ... (Repeat for 5 items)
+        """
+
+        try:
+            response = self.model.generate_content(prompt)
+            return response.text
+        except Exception as e:
+            return f"Error generating AI content: {e}"
+
 if __name__ == "__main__":
     # Simple test
     from dotenv import load_dotenv
