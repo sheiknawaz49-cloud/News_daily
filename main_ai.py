@@ -11,9 +11,9 @@ def main():
     news_api_key = os.getenv("NEWS_API_KEY") # Still needed for NewsClient init, though not used for HN
     gemini_api_key = os.getenv("GEMINI_API_KEY")
     
+    # gemini_api_key is now optional for AI news as we use deterministic formatting.
     if not gemini_api_key:
-        print("Error: Missing GEMINI_API_KEY. Please check your .env file or environment variables.")
-        return
+        print("Warning: GEMINI_API_KEY not found. 'Smart' summaries will be disabled, using simple formatting.")
 
     # 1. Fetch AI News from Hacker News
     print("Fetching AI news from Hacker News...")
