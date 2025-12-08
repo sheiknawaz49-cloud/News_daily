@@ -14,52 +14,80 @@ class ContentGenerator:
         Generates a structured summary of top 5 news items (Title, Description, Hashtags).
         Prioritizes Technology and AI.
         """
-        if not self.model:
-            return "Error: Gemini API key not configured. Cannot generate smart summary."
-
         if not articles:
             return "No articles provided to generate summary."
-
-        # Prepare the context from articles
-        news_context = ""
-        for i, article in enumerate(articles): 
-            title = article.get('title', 'No Title')
-            description = article.get('description', 'No Description')
-            news_context += f"Article {i+1}: {title} - {description}\n"
-
-        prompt = f"""
-        You are a tech news curator. 
-        From the following list of articles, select the top 5 most relevant and interesting stories, strictly prioritizing Artificial Intelligence (AI) and Technology.
-
-        Input Articles:
-        {news_context}
-
-        Output Format:
-        Please provide exactly 5 news items in the following format:
-
-        News 1:
-
-        # TITLE
-        [Concise and Catchy Title]
-
-        # DESCRIPTION
-        [2-3 sentences summarizing the key points]
-
-        # HASHTAGS
-        [3-5 relevant hashtags]
-
-        News 2:
-        ...
-        
-        News 5:
-        ...
-        """
-
+            
         try:
+            if not self.model:
+                raise Exception("Gemini API key not configured")
+
+            # Prepare the context from articles
+            news_context = ""
+            for i, article in enumerate(articles): 
+                title = article.get('title', 'No Title')
+                description = article.get('description', 'No Description')
+                news_context += f"Article {i+1}: {title} - {description}\n"
+
+            prompt = f"""
+            You are a tech news curator. 
+            From the following list of articles, select the top 5 most relevant and interesting stories, strictly prioritizing Artificial Intelligence (AI) and Technology.
+
+            Input Articles:
+            {news_context}
+
+            Output Format:
+            Please provide exactly 5 news items in the following format:
+
+            News 1:
+
+            # TITLE
+            [Concise and Catchy Title]
+
+            # DESCRIPTION
+            [2-3 sentences summarizing the key points]
+
+            # HASHTAGS
+            [3-5 relevant hashtags]
+
+            News 2:
+            ...
+            
+            News 5:
+            ...
+            """
+
             response = self.model.generate_content(prompt)
             return response.text
         except Exception as e:
-            return f"Error generating content: {e}"
+            print(f"Error generating AI summary (likely rate limit or missing key): {e}")
+            print("Falling back to simple headline summary...")
+            return self.generate_simple_tech_summary(articles)
+
+    def generate_simple_tech_summary(self, articles):
+        """
+        Fallback method: Generates a simple summary using just headlines when API fails.
+        """
+        output = "# TOP 5 TECH NEWS (HEADLINES ONLY)\n\n"
+        
+        # Take up to 5 articles
+        count = 0
+        for i, article in enumerate(articles):
+            if count >= 5:
+                break
+                
+            title = article.get('title', 'No Title')
+            description = article.get('description', 'No Description')
+            # Some descriptions might be None
+            if not description:
+                description = "No description available."
+            
+            output += f"News {count+1}:\n"
+            output += f"# TITLE\n{title}\n\n"
+            output += f"# DESCRIPTION\n{description}\n\n"
+            output += f"# HASHTAGS\n#tech #news #latest\n\n"
+            count += 1
+            
+        return output
 
     def generate_ai_summary(self, articles):
         """
